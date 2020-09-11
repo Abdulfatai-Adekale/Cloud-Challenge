@@ -1,0 +1,82 @@
+###LAB: Google Cloud Fundamentals: Getting Started with GKE
+##Overview
+In this lab, you create a Google Kubernetes Engine cluster containing several containers, each containing a web server. You place a load balancer in front of the cluster and view its contents.
+
+##Objectives
+In this lab, you learn how to perform the following tasks:
+	•	Provision a Kubernetes cluster using Kubernetes Engine.
+	•	Deploy and manage Docker containers using kubectl.
+
+##Task 1: Sign in to the Google Cloud Platform (GCP) Console
+1.	When ready, click Start LAB
+
+2.	Note your lab credentials. You will use them to sign in to Cloud SDK.
+
+3.	Open Cloud SDK
+
+	Initialize the SDK
+1.	gcloud init
+
+2.	Accept the option to log in using your Google user account:
+	To continue, you must log in. Would you like to log in (Y/n)? Y
+	
+3.	In your browser, log in to your Google user account when prompted and click Allow to grant permission to access Google Cloud resources.
+
+4.	At the command prompt, select a Google Cloud project from the list of those where you have Owner, Editor or Viewer permissions:
+	Pick cloud project to use:
+	[1] [my-project-1]
+	[2] [my-project-2]
+		...
+	Please enter your numeric choice:
+NB: Enter numeric code that corresponds to the GCP project ID given in your lab credentials. 
+
+
+##Task 2: Confirm that needed APIs are enabled
+1.	Note the name of your GCP Project:
+	gcloud auth list
+	gcloud projects list
+	
+2.	Confirm if the Kubernetes engine API and Container Registry API are enabled:
+	gcloud services list
+
+3.	If either API is missing, enable it for your current project:
+	gcloud services enable kubernetes engine api   
+	gcloud services enable container registry api 
+
+##Task 3: Start a Kubernetes Engine cluster
+1.	Starting a Kubernetes cluster “webfrontend” with 2 nodes:
+	gcloud container clusters create webfrontend –zone= ZONE --num-nodes 2
+
+NB: ZONE = Your Compute Engine Zone in the lab credentials (e.g. us-central1-a)
+
+2.	Check installed version of Kubernetes:
+	kubectl version
+
+3.	View running nodes in Compute engine:
+	gcloud compute instances list
+
+##Task 4: Run and deploy a container
+1.	Launch a single instance of the nginx container:
+	kubectl create deploy nginx --image=nginx:1.17.10
+
+2.	View the pod running the nginx container:
+	kubectl get pods
+
+3.	Expose the nginx container to the internet:
+	kubectl expose deployment nginx --port 80 --type LoadBalancer
+
+4.	View the new service:
+	kubectl get services
+
+5.	Open a new web browser tab and paste your cluster's external IP address into the address bar. The default home page of the Nginx browser is displayed
+
+6.	Scale up the number of pods running on your service:
+	kubectl scale deployment nginx --replicas 3
+
+7.	Confirm that Kubernetes has updated the number of pods:
+	kubectl get pods
+
+8.	Confirm that your external IP address has not changed:
+	kubectl get services
+
+9.	Return to the web browser tab in which you viewed your cluster's external IP address. Refresh the page to confirm that the nginx web server is still responding.
